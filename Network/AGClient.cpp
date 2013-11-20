@@ -8,9 +8,9 @@
 
 #include "AGClient.h"
 
-AGClient::AGClient(io_service &iosev):m_iosev(iosev),m_acceptor(iosev,tcp::endpoint(tcp::v4(), 1001))
+AGClient::AGClient(io_service &iosev):m_iosev(iosev),m_acceptor(iosev,tcp::endpoint(tcp::v4(), clientPort))
 {
-    
+    buf.resize(100);
 }
 
 void AGClient::setup()
@@ -34,8 +34,8 @@ void AGClient::acceptHandler(boost::shared_ptr<tcp::socket> psocket, boost::syst
         return;
     }
     std::cout << "ip available.\n";
-    serverAddr = psocket->remote_endpoint();
-    m_acceptor.bind(serverAddr);
+    serverAddr = tcp::endpoint(psocket->remote_endpoint().address(),serverPort);
+    //m_acceptor.bind(serverAddr,ec1);
 }
 
 void AGClient::recieve()
@@ -68,9 +68,8 @@ void AGClient::send(vector<int> message)
 {
     boost::system::error_code ec;
     boost::shared_ptr<tcp::socket> psocket(new tcp::socket(m_iosev));
-    //for (int i = 0; i<6; i++) {
+
     psocket->async_connect(serverAddr,boost::bind(&AGClient::conncetHandler, this, psocket, message, _1));
-    //}
 }
 void AGClient::conncetHandler(boost::shared_ptr<tcp::socket> psocket, vector<int> message, boost::system::error_code ec)
 {

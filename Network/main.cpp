@@ -12,54 +12,6 @@
 #include "AGClient.h"
 #include "AGServer.h"
 
-int main(int argc, const char * argv[])
-{
-    using std::cout;
-    using std::endl;
-    using std::cin;
-    using std::vector;
-    
-    io_service iosev;
-    AGServer server(iosev);
-    
-    cout << "Input IP address: ";
-    char ip[20];
-    cin >> ip;
-    
-    server.setup(ip);
-    iosev.run();
-    while (1) {
-        cout << "Choose opertion: r for receive, s for send";
-        char op;
-        cin >> op;
-        if (op=='r') {
-            iosev.reset();
-            server.recieve();
-            iosev.run();
-        }
-        else if(op=='s')
-        {
-            cout << "Input numbers: ";
-            int n;
-            cin >> n;
-            vector<int> temp;
-            for (int i =0; i<n; i++) {
-                int t;
-                cin >> t;
-                temp.push_back(t);
-            }
-            cout << "Input finished.\n";
-            iosev.reset();
-            server.send(temp);
-            iosev.run();
-        }
-        else break;
-    }
-
-    std::cout << "Bye, World!\n";
-    return 0;
-}
-
 //int main(int argc, const char * argv[])
 //{
 //    using std::cout;
@@ -68,18 +20,21 @@ int main(int argc, const char * argv[])
 //    using std::vector;
 //    
 //    io_service iosev;
-//    AGClient client(iosev);
-//    client.setup();
-//    iosev.run();
-//
+//    AGServer server(iosev);
 //    
+//    cout << "Input IP address: ";
+//    char ip[20];
+//    cin >> ip;
+//    
+//    server.setup(ip);
+//    iosev.run();
 //    while (1) {
 //        cout << "Choose opertion: r for receive, s for send";
 //        char op;
 //        cin >> op;
 //        if (op=='r') {
 //            iosev.reset();
-//            client.recieve();
+//            server.recieve();
 //            iosev.run();
 //        }
 //        else if(op=='s')
@@ -95,11 +50,56 @@ int main(int argc, const char * argv[])
 //            }
 //            cout << "Input finished.\n";
 //            iosev.reset();
-//            client.send(temp);
+//            server.send(temp);
 //            iosev.run();
 //        }
 //        else break;
 //    }
+//
 //    std::cout << "Bye, World!\n";
 //    return 0;
 //}
+
+int main(int argc, const char * argv[])
+{
+    using std::cout;
+    using std::endl;
+    using std::cin;
+    using std::vector;
+    
+    io_service iosev;
+    AGClient client(iosev);
+    client.setup();
+    iosev.run();
+
+    
+    while (1) {
+        cout << "Choose opertion: r for receive, s for send";
+        char op;
+        cin >> op;
+        if (op=='r') {
+            iosev.reset();
+            client.recieve();
+            iosev.run();
+        }
+        else if(op=='s')
+        {
+            cout << "Input numbers: ";
+            int n;
+            cin >> n;
+            vector<int> temp;
+            for (int i =0; i<n; i++) {
+                int t;
+                cin >> t;
+                temp.push_back(t);
+            }
+            cout << "Input finished.\n";
+            iosev.reset();
+            client.send(temp);
+            iosev.run();
+        }
+        else break;
+    }
+    std::cout << "Bye, World!\n";
+    return 0;
+}

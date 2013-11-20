@@ -17,6 +17,9 @@ using namespace boost::asio;
 using boost::system::error_code;
 using ip::tcp;
 using std::vector;
+
+#define clientPort 25555
+#define serverPort 25556
 class AGClient {
     io_service &m_iosev;
     tcp::endpoint serverAddr;

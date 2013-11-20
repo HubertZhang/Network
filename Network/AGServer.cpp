@@ -8,14 +8,14 @@
 
 #include "AGServer.h"
 
-AGServer::AGServer(io_service &iosev):m_iosev(iosev),m_acceptor(iosev,tcp::endpoint(tcp::v4(), 1000))
+AGServer::AGServer(io_service &iosev):m_iosev(iosev),m_acceptor(iosev,tcp::endpoint(tcp::v4(), serverPort))
 {
     buf.resize(100);
 }
 
 void AGServer::setup(char* addr)
 {
-    clientAddr = tcp::endpoint(ip::address::from_string(addr),1001);
+    clientAddr = tcp::endpoint(ip::address::from_string(addr),clientPort);
     boost::shared_ptr<tcp::socket> psocket(new tcp::socket(m_iosev));
     boost::system::error_code ec;
     psocket->connect(clientAddr, ec);

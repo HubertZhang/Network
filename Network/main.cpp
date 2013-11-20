@@ -7,6 +7,8 @@
 //
 
 #include <iostream>
+#include <boost/asio.hpp>
+#include "AGClient.h"
 
 int main(int argc, const char * argv[])
 {

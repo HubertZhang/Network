@@ -22,10 +22,9 @@ class AGServer
     io_service &m_iosev;
     tcp::endpoint clientAddr;
     ip::tcp::acceptor m_acceptor;
-    vector<int> buf;
     void acceptHandler(boost::shared_ptr<tcp::socket> psocket, boost::system::error_code ec);
     void recieveHandler(boost::shared_ptr<tcp::socket> psocket, boost::system::error_code ec);
-    void readHandler(boost::shared_ptr<tcp::socket> psocket, boost::system::error_code ec);
+    void readHandler(boost::shared_ptr<tcp::socket> psocket, boost::system::error_code ec,size_t bytesArrived);
     void conncetHandler(boost::shared_ptr<tcp::socket> psocket, vector<int> message, boost::system::error_code ec);
     void writeHandler(error_code ec, size_t bytes_transferred);
 public:
@@ -33,6 +32,9 @@ public:
     void setup(char*);
     void recieve();
     void send(vector<int> message);
+    
+    int len;
+    vector<int> buf;
 };
 
 #endif /* defined(__Network__AGServer__) */

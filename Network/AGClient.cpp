@@ -8,7 +8,7 @@
 
 #include "AGClient.h"
 
-AGClient::AGClient(io_service &iosev):m_iosev(iosev),m_acceptor(iosev,tcp::endpoint(tcp::v4(), 1000))
+AGClient::AGClient(io_service &iosev):m_iosev(iosev),m_acceptor(iosev,tcp::endpoint(tcp::v4(), 1001))
 {
     
 }
@@ -51,16 +51,17 @@ void AGClient::recieveHandler(boost::shared_ptr<tcp::socket> psocket, boost::sys
         return;
     }
     std::cout << "Data recieved.\n";
-    psocket->async_read_some(buffer(buf), boost::bind(&AGClient::readHandler,this,psocket,_1));
+    psocket->async_read_some(buffer(buf), boost::bind(&AGClient::readHandler,this,psocket,_1,_2));
 }
 
-void AGClient::readHandler(boost::shared_ptr<tcp::socket> psocket, boost::system::error_code ec)
+void AGClient::readHandler(boost::shared_ptr<tcp::socket> psocket, boost::system::error_code ec,size_t bytesArrived)
 {
     if (ec) {
         std::cout << boost::system::system_error(ec).what() << std::endl;
         return;
     }
-    else std::cout << buf.size() << std::endl;
+    std::cout << bytesArrived << std::endl;
+    len = bytesArrived/sizeof(int);
 }
 
 void AGClient::send(vector<int> message)
@@ -78,7 +79,7 @@ void AGClient::conncetHandler(boost::shared_ptr<tcp::socket> psocket, vector<int
 }
 
 void AGClient::writeHandler(error_code ec,
-                   size_t bytes_transferred)
+                            size_t bytes_transferred)
 {
     if(ec)
         std::cout<< "发送失败!" << boost::system::system_error(ec).what() << std::endl;

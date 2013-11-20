@@ -10,12 +10,12 @@
 
 AGServer::AGServer(io_service &iosev):m_iosev(iosev),m_acceptor(iosev,tcp::endpoint(tcp::v4(), 1000))
 {
-    
+    buf.resize(100);
 }
 
 void AGServer::setup(char* addr)
 {
-    clientAddr = tcp::endpoint(ip::address::from_string(addr),1000);
+    clientAddr = tcp::endpoint(ip::address::from_string(addr),1001);
     boost::shared_ptr<tcp::socket> psocket(new tcp::socket(m_iosev));
     boost::system::error_code ec;
     psocket->connect(clientAddr, ec);
@@ -29,7 +29,7 @@ void AGServer::setup(char* addr)
         std::cout << boost::system::system_error(ec).what() << std::endl;
         return;
     }
-    if (temp[0]!=1||len!=1) {
+    if (temp[0]!=1||len!=sizeof(int)) {
         std::cout << "wrong init!!\n";
     }
     //(*psocket, boost::bind(&AGServer::acceptHandler,this,psocket,_1));
@@ -42,7 +42,7 @@ void AGServer::setup(char* addr)
 //        return;
 //    }
 //    std::cout << "A new ip detected.\n";
-//    
+//
 //    serverAddr = psocket->remote_endpoint();
 //    m_acceptor.bind(serverAddr);
 //}
@@ -60,16 +60,17 @@ void AGServer::recieveHandler(boost::shared_ptr<tcp::socket> psocket, boost::sys
         return;
     }
     std::cout << "Data recieved.\n";
-    psocket->async_read_some(buffer(buf), boost::bind(&AGServer::readHandler,this,psocket,_1));
+    psocket->async_read_some(buffer(buf), boost::bind(&AGServer::readHandler,this,psocket,_1,_2));
 }
 
-void AGServer::readHandler(boost::shared_ptr<tcp::socket> psocket, boost::system::error_code ec)
+void AGServer::readHandler(boost::shared_ptr<tcp::socket> psocket, boost::system::error_code ec,size_t bytesArrived)
 {
     if (ec) {
         std::cout << boost::system::system_error(ec).what() << std::endl;
         return;
     }
-    else std::cout << buf.size() << std::endl;
+    std::cout << bytesArrived << " Bytes received." << std::endl;
+    len = bytesArrived/sizeof(int);
 }
 
 void AGServer::send(vector<int> message)

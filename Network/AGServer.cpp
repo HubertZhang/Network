@@ -28,9 +28,11 @@ void AGServer::setup(int* listeningPort)
         int temp[1] ={listeningPort[i]};
         psocket->write_some(buffer(temp));
         boost::asio::ip::tcp::endpoint tempEP(tcp::v4(),listeningPort[i]);
+        psocket->close();
         csocket[i] = boost::shared_ptr<tcp::socket>(new tcp::socket(m_iosev));
         m_pacceptor[i]->open(tempEP.protocol());
         m_pacceptor[i]->bind(tempEP);
+        m_pacceptor[i]->listen();
         m_pacceptor[i]->accept(*csocket[i]);
     }
 }

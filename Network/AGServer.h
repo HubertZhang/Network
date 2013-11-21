@@ -18,7 +18,7 @@ using boost::system::error_code;
 using ip::tcp;
 using std::vector;
 
-#define clientPort 25555
+//#define clientPort 25555
 #define serverPort 25556
 class AGServer
 {
@@ -28,13 +28,12 @@ class AGServer
     ip::tcp::acceptor** m_pacceptor;
     boost::shared_ptr<tcp::socket> psocket;
     boost::shared_ptr<tcp::socket> csocket[6];
-    void acceptHandler(boost::shared_ptr<tcp::socket> psocket, boost::system::error_code ec);
-    //void recieveHandler(boost::shared_ptr<tcp::socket> psocket, boost::system::error_code ec);
+
     void readHandler(boost::shared_ptr<tcp::socket> psocket, boost::system::error_code ec,size_t bytesArrived);
-    //void conncetHandler(boost::shared_ptr<tcp::socket> psocket, vector<int> message, boost::system::error_code ec);
     void writeHandler(error_code ec, size_t bytes_transferred);
 public:
     AGServer(io_service &iosev);
+
     void setup(int* listeningPort);
     void recieve(int i);
     void send(vector<int> message,int i);

@@ -57,7 +57,7 @@ void AGServer::setup(int listeningPort)
 //    m_acceptor.bind(serverAddr);
 //}
 
-void AGServer::recieve(int i)
+void AGServer::recieve()
 {
     boost::shared_ptr<tcp::socket> psocket(new tcp::socket(m_iosev));
     m_acceptor.async_accept(*psocket, boost::bind(&AGServer::recieveHandler,this,psocket,_1));
@@ -83,7 +83,7 @@ void AGServer::readHandler(boost::shared_ptr<tcp::socket> psocket, boost::system
     len = bytesArrived/sizeof(int);
 }
 
-void AGServer::send(vector<int> message, int i)
+void AGServer::send(vector<int> message)
 {
     boost::system::error_code ec;
     boost::shared_ptr<tcp::socket> psocket(new tcp::socket(m_iosev));

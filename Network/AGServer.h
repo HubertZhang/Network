@@ -33,8 +33,8 @@ class AGServer
 public:
     AGServer(io_service &iosev);
     void setup(int listeningPort);
-    void recieve(int i);
-    void send(vector<int> message,int i);
+    void recieve();
+    void send(vector<int> message);
     
     int len;
     vector<int> buf;

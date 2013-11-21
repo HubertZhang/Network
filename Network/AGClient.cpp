@@ -23,7 +23,7 @@ AGClient::AGClient(io_service &iosev):m_iosev(iosev),m_acceptor(iosev)
 int AGClient::setup(char* addr,unsigned short int serverPort)
 {
     serverAddr = tcp::endpoint(ip::address::from_string(addr),serverPort);
-    boost::shared_ptr<tcp::socket> psocket(new tcp::socket(m_iosev));
+    psocket = boost::shared_ptr<tcp::socket>(new tcp::socket(m_iosev));
     boost::system::error_code ec;
     psocket->connect(serverAddr, ec);
     if (ec) {
@@ -36,8 +36,12 @@ int AGClient::setup(char* addr,unsigned short int serverPort)
         return 2;
     }
     std::cerr << tempLen << " Byte recieved, port is "<<buf[0] << std::endl;
+    
     serverAddr.port(buf[0]);
-    m_acceptor.bind(tcp::endpoint(serverAddr.address(),clientPort));
+    tcp::endpoint tempEP(boost::asio::ip::tcp::v4(),psocket->local_endpoint().port());
+    m_acceptor.open(tempEP.protocol());
+    m_acceptor.set_option(socket_base::reuse_address(true));
+    m_acceptor.bind(tempEP);
     m_acceptor.listen();
     return 0;
 //    int temp[100];
@@ -73,17 +77,17 @@ int AGClient::setup(char* addr,unsigned short int serverPort)
 
 void AGClient::recieve()
 {
-    boost::shared_ptr<tcp::socket> psocket(new tcp::socket(m_iosev));
-    m_acceptor.async_accept(*psocket, boost::bind(&AGClient::recieveHandler,this,psocket,_1));
-}
-
-void AGClient::recieveHandler(boost::shared_ptr<tcp::socket> psocket, boost::system::error_code ec)
-{
-    if (ec) {
-        std::cout << boost::system::system_error(ec).what() << std::endl;
-        return;
-    }
-    std::cout << "Data recieved.\n";
+//    boost::shared_ptr<tcp::socket> psocket(new tcp::socket(m_iosev));
+//    m_acceptor.async_accept(*psocket, boost::bind(&AGClient::recieveHandler,this,psocket,_1));
+//}
+//
+//void AGClient::recieveHandler(boost::shared_ptr<tcp::socket> psocket, boost::system::error_code ec)
+//{
+//    if (ec) {
+//        std::cout << boost::system::system_error(ec).what() << std::endl;
+//        return;
+//    }
+    std::cout << "Waiting for Data.\n";
     psocket->async_read_some(buffer(buf), boost::bind(&AGClient::readHandler,this,psocket,_1,_2));
 }
 
@@ -99,13 +103,13 @@ void AGClient::readHandler(boost::shared_ptr<tcp::socket> psocket, boost::system
 
 void AGClient::send(vector<int> message)
 {
-    boost::system::error_code ec;
-    boost::shared_ptr<tcp::socket> psocket(new tcp::socket(m_iosev));
-
-    psocket->async_connect(serverAddr,boost::bind(&AGClient::conncetHandler, this, psocket, message, _1));
-}
-void AGClient::conncetHandler(boost::shared_ptr<tcp::socket> psocket, vector<int> message, boost::system::error_code ec)
-{
+//    boost::system::error_code ec;
+//    boost::shared_ptr<tcp::socket> psocket(new tcp::socket(m_iosev));
+//
+//    psocket->async_connect(serverAddr,boost::bind(&AGClient::conncetHandler, this, psocket, message, _1));
+//}
+//void AGClient::conncetHandler(boost::shared_ptr<tcp::socket> psocket, vector<int> message, boost::system::error_code ec)
+//{
     psocket->async_write_some(buffer(message),
                               boost::bind(&AGClient::writeHandler, this, _1, _2));
 }

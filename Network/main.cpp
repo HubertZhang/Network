@@ -66,8 +66,9 @@ int main(int argc, const char * argv[])
     
     AGClient client(iosev);
     cout << "Input IP address: ";
-    char ip[20];
-    cin >> ip;
+    char ip[20] = "59.66.130.172";
+    //cin >> ip;
+    cout << ip;
     client.setup(ip,25556);
     iosev.run();
 

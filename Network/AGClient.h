@@ -24,11 +24,11 @@ class AGClient {
     io_service &m_iosev;
     tcp::endpoint serverAddr;
     ip::tcp::acceptor m_acceptor;
-    
+    boost::shared_ptr<tcp::socket> psocket;
     //void acceptHandler(boost::shared_ptr<tcp::socket> psocket, boost::system::error_code ec);
-    void recieveHandler(boost::shared_ptr<tcp::socket> psocket, boost::system::error_code ec);
+    //void recieveHandler(boost::shared_ptr<tcp::socket> psocket, boost::system::error_code ec);
     void readHandler(boost::shared_ptr<tcp::socket> psocket, boost::system::error_code ec,size_t bytesArrived);
-    void conncetHandler(boost::shared_ptr<tcp::socket> psocket, vector<int> message, boost::system::error_code ec);
+    //void conncetHandler(boost::shared_ptr<tcp::socket> psocket, vector<int> message, boost::system::error_code ec);
     void writeHandler(error_code ec, size_t bytes_transferred);
 public:
     AGClient(io_service &iosev);

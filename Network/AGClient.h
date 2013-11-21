@@ -19,20 +19,20 @@ using ip::tcp;
 using std::vector;
 
 #define clientPort 25555
-#define serverPort 25556
+//#define serverPort 25556
 class AGClient {
     io_service &m_iosev;
     tcp::endpoint serverAddr;
     ip::tcp::acceptor m_acceptor;
     
-    void acceptHandler(boost::shared_ptr<tcp::socket> psocket, boost::system::error_code ec);
+    //void acceptHandler(boost::shared_ptr<tcp::socket> psocket, boost::system::error_code ec);
     void recieveHandler(boost::shared_ptr<tcp::socket> psocket, boost::system::error_code ec);
     void readHandler(boost::shared_ptr<tcp::socket> psocket, boost::system::error_code ec,size_t bytesArrived);
     void conncetHandler(boost::shared_ptr<tcp::socket> psocket, vector<int> message, boost::system::error_code ec);
     void writeHandler(error_code ec, size_t bytes_transferred);
 public:
     AGClient(io_service &iosev);
-    void setup();
+    int setup(char* addr,unsigned short int serverPort);
     void recieve();
     void send(vector<int> message);
     

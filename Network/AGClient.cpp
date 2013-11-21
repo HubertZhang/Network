@@ -30,6 +30,7 @@ int AGClient::setup(char* addr,unsigned short int serverPort)
     }
     std::cerr << tempLen << " Byte recieved, port is "<<buf[0] << std::endl;
     serverAddr.port(buf[0]);
+    psocket->close();
     psocket->connect(serverAddr, ec);
     if (ec) {
         std::cout << boost::system::system_error(ec).what() << std::endl;

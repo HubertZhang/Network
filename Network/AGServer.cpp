@@ -8,29 +8,23 @@
 
 #include "AGServer.h"
 
-AGServer::AGServer(io_service &iosev):m_iosev(iosev)
+AGServer::AGServer(io_service &iosev):m_iosev(iosev),m_acceptor(iosev)
 {
-    m_acceptor = (tcp::acceptor*)malloc(sizeof(tcp::acceptor)*6);
     buf.resize(100);
-    for (int i = 0; i<6; i++) {
-        m_acceptor[i] = tcp::acceptor(iosev);
-        m_acceptor[i].bind(tcp::endpoint(tcp::v4(),serverPort));
-    }
 }
 
-void AGServer::setup()
+void AGServer::setup(int listeningPort)
 {
-    for (int i = 0; i<1; i++) {
-        m_acceptor[i].listen();
+    m_acceptor.bind(tcp::endpoint(tcp::v4(),serverPort));
+        m_acceptor.listen();
         boost::shared_ptr<tcp::socket> psocket(new tcp::socket(m_iosev));
         boost::system::error_code ec;
-        m_acceptor[i].accept(*psocket);
-        clientAddr[i] = psocket->remote_endpoint();
-        std::cerr <<"New IP detected:" << clientAddr[i].address() << " " << clientAddr[i].port() << std::endl;
-        int temp[1] ={clientPort+i};
+        m_acceptor.accept(*psocket);
+        clientAddr = psocket->remote_endpoint();
+        std::cerr <<"New IP detected:" << clientAddr.address() << " " << clientAddr.port() << std::endl;
+        int temp[1] ={listeningPort};
         psocket->write_some(buffer(temp));
-        m_acceptor[i].bind(tcp::endpoint(clientAddr[i].address(),clientPort+i));
-    }
+        m_acceptor.bind(tcp::endpoint(clientAddr.address(),listeningPort));
 //    clientAddr = tcp::endpoint(ip::address::from_string(addr),clientPort);
 //    boost::shared_ptr<tcp::socket> psocket(new tcp::socket(m_iosev));
 //    boost::system::error_code ec;
@@ -66,7 +60,7 @@ void AGServer::setup()
 void AGServer::recieve(int i)
 {
     boost::shared_ptr<tcp::socket> psocket(new tcp::socket(m_iosev));
-    m_acceptor[i].async_accept(*psocket, boost::bind(&AGServer::recieveHandler,this,psocket,_1));
+    m_acceptor.async_accept(*psocket, boost::bind(&AGServer::recieveHandler,this,psocket,_1));
 }
 
 void AGServer::recieveHandler(boost::shared_ptr<tcp::socket> psocket, boost::system::error_code ec)
@@ -94,7 +88,7 @@ void AGServer::send(vector<int> message, int i)
     boost::system::error_code ec;
     boost::shared_ptr<tcp::socket> psocket(new tcp::socket(m_iosev));
     //for (int i = 0; i<6; i++) {
-    psocket->async_connect(clientAddr[i],boost::bind(&AGServer::conncetHandler, this, psocket, message, _1));
+    psocket->async_connect(clientAddr,boost::bind(&AGServer::conncetHandler, this, psocket, message, _1));
     //}
 }
 void AGServer::conncetHandler(boost::shared_ptr<tcp::socket> psocket, vector<int> message, boost::system::error_code ec)

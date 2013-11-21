@@ -23,9 +23,11 @@ using std::vector;
 class AGServer
 {
     io_service &m_iosev;
-    tcp::endpoint clientAddr;
-    ip::tcp::acceptor m_acceptor,m_acceptor1;
+    tcp::endpoint clientAddr[6];
+    ip::tcp::acceptor m_acceptor;
+    ip::tcp::acceptor** m_pacceptor;
     boost::shared_ptr<tcp::socket> psocket;
+    boost::shared_ptr<tcp::socket> csocket[6];
     void acceptHandler(boost::shared_ptr<tcp::socket> psocket, boost::system::error_code ec);
     //void recieveHandler(boost::shared_ptr<tcp::socket> psocket, boost::system::error_code ec);
     void readHandler(boost::shared_ptr<tcp::socket> psocket, boost::system::error_code ec,size_t bytesArrived);
@@ -33,12 +35,11 @@ class AGServer
     void writeHandler(error_code ec, size_t bytes_transferred);
 public:
     AGServer(io_service &iosev);
-    void setup(int listeningPort);
-    void recieve();
-    void send(vector<int> message);
+    void setup(int* listeningPort);
+    void recieve(int i);
+    void send(vector<int> message,int i);
 
-    int len;
-    vector<int> buf;
+    vector<int> buf[6];
 };
 
 #endif /* defined(__Network__AGServer__) */
